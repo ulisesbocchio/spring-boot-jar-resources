@@ -18,3 +18,7 @@ new SpringApplicationBuilder()
             .resourceLoader(new JarResourceLoader("/path/to/extract"))
             .run(args);
 ```
+
+## How this library works?
+
+Internally, this library simply wraps existing resources loaded by DefaultResourceLoader with a custom JarResource implementation that deals with the details of extracting the resource from the Jar.
