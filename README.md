@@ -7,10 +7,21 @@ When using Spring Boot out of the box, resources from classpath are jarred, and 
 
 ## How to use this library?
 
-Simply add the following configuration to your Spring Boot app:
+Simply add the following dependency to your project:
+
+```xml
+<dependency>
+	<groupId>com.github.ulisesbocchio</groupId>
+	<artifactId>spring-boot-jar-resources</artifactId>
+	<version>1.0</version>
+</dependency>
+```
+
+And the following configuration to your Spring Boot app:
 
 ```java
 new SpringApplicationBuilder()
+            .sources(Application.class)
             .resourceLoader(new JarResourceLoader())
             .run(args);
 ```
