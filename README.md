@@ -1,4 +1,6 @@
 # spring-boot-jar-resources
+
+[![Join the chat at https://gitter.im/ulisesbocchio/spring-boot-jar-resources](https://badges.gitter.im/ulisesbocchio/spring-boot-jar-resources.svg)](https://gitter.im/ulisesbocchio/spring-boot-jar-resources?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 When using Spring Boot out of the box, resources from classpath are jarred, and while they can be accessed through input streams, they cannot be accessed as Files. Some libraries require Files as input instead of input streams or Spring Resources. This library deals whith that limitation by allowing you to do resource.getFile() on any jarred resource. It does so by extracting the file from the jar to a temporary location.
 
 ## How to use this library?
