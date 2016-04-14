@@ -30,6 +30,7 @@ Alternatively, provide a path to the JarResourceLoader where jarred resources wi
 
 ```java
 new SpringApplicationBuilder()
+            .sources(Application.class)
             .resourceLoader(new JarResourceLoader("/path/to/extract"))
             .run(args);
 ```
