@@ -56,7 +56,7 @@ public class JarResource implements Resource {
     @Override
     public File getFile() throws IOException {
         if(ResourceUtils.isJarURL(getURL())) {
-            if(tempFile == null) {
+            if(tempFile == null || !tempFile.exists()) {
                 tempFile = JarUtils.getFile(delegate, extractPath);
             }
             return new File(tempFile.toURI());
@@ -76,7 +76,7 @@ public class JarResource implements Resource {
 
     @Override
     public Resource createRelative(String relativePath) throws IOException {
-        return delegate.createRelative(relativePath);
+        return new JarResource(delegate.createRelative(relativePath));
     }
 
     @Override

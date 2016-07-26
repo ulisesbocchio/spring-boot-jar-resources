@@ -1,6 +1,5 @@
 package com.github.ulisesbocchio.jar.resources;
 
-import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 
 import lombok.SneakyThrows;
@@ -15,33 +14,35 @@ import org.springframework.util.ResourceUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 /**
  * @author Ulises Bocchio
  */
 @Slf4j
 public class JarUtils {
+
     public static File getFile(Resource resource) {
         return getFile(resource, null);
     }
 
+    @SneakyThrows
     public static File getFile(Resource resource, String extractPath) {
-        try {
-            return ResourceUtils.isJarURL(resource.getURL()) ? getFromJar(resource, extractPath) : resource.getFile();
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
-        }
+        return ResourceUtils.isJarURL(resource.getURL()) ? getFromJar(resource, extractPath) : resource.getFile();
     }
 
     @SneakyThrows
     private static File getFromJar(Resource resource) {
         return getFromJar(resource, null);
     }
+
     @SneakyThrows
     private static File getFromJar(Resource resource, String extractPath) {
-        FileObject file = VFS.getManager().resolveFile(resource.getURI().toString());
+        FileObject file = VFS.getManager().resolveFile(maybeFixUri(resource));
         File extractDir;
-        if(extractPath != null) {
+        if (extractPath != null) {
             extractDir = new File(extractPath);
             FileUtils.forceMkdir(extractDir);
         } else {
@@ -49,6 +50,30 @@ public class JarUtils {
         }
         log.info("EXTRACT DIR CREATED {}", extractDir.getAbsolutePath());
         return copyToDir(file, extractDir);
+    }
+
+    private static String maybeFixUri(Resource resource) throws IOException {
+        String uri = resource.getURI().toString();
+        int numOfJarsInResource = numbOfJars(uri);
+        String jarPrefix = jarPrefix(numOfJarsInResource);
+        uri = jarPrefix + uri.substring(4);
+        return uri;
+    }
+
+    private static String jarPrefix(int n) {
+        return IntStream.range(0, n)
+            .mapToObj(num -> "jar:")
+            .reduce((r, l) -> r + l)
+            .orElse("jar:");
+    }
+
+    private static int numbOfJars(String uri) {
+        Matcher matcher = Pattern.compile("\\.jar!").matcher(uri);
+        int matches = 0;
+        while (matcher.find()) {
+            matches++;
+        }
+        return matches;
     }
 
     @SneakyThrows
@@ -82,17 +107,17 @@ public class JarUtils {
     }
 
     private static void createDir(File file) {
-        if(!file.exists() && !file.mkdir()) {
+        if (!file.exists() && !file.mkdir()) {
             throw new IllegalStateException(String.format("Could not create temp directory: %s", file.getAbsolutePath()));
         }
     }
 
     @SneakyThrows
     private static void createFile(File file) {
-        if(file.exists()) {
+        if (file.exists()) {
             FileUtils.forceDelete(file);
         }
-        if(!file.createNewFile()) {
+        if (!file.createNewFile()) {
             throw new IllegalStateException(String.format("Could not create temp jarredFile: %s", file.getAbsolutePath()));
         }
     }
