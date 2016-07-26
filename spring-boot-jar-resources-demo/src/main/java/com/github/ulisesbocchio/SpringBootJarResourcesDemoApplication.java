@@ -19,9 +19,10 @@ public class SpringBootJarResourcesDemoApplication implements CommandLineRunner 
     ApplicationContext appContext;
 
     public static void main(String[] args) {
+        String extractDir = System.getProperty("extract.dir", System.getenv("EXTRACT_DIR"));
         new SpringApplicationBuilder()
             .sources(SpringBootJarResourcesDemoApplication.class)
-            .resourceLoader(new JarResourceLoader())
+            .resourceLoader(new JarResourceLoader(extractDir))
             .build()
             .run();
     }
