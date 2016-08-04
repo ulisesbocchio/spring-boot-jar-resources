@@ -47,7 +47,6 @@ public static void main(String[] args) throws Exception {
         .run(args);
 }
 
-@SuppressWarnings("unchecked")
 static String getExtractDir(String[] args) {
     return new StandardEnvironment() {
         @Override
