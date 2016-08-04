@@ -66,7 +66,9 @@ With this you can run you `app.jar` this ways:
 
 It won't work if you try to put `resources.extract.dir` in `application.properties` since this is too early in the game to access those properties from Spring and after all we're creating our own customized environment with a command line arguments property source to get the property we want.  If you want to put this property in `application.properties` you can add after the `SimpleCommandLinePropertySource` another property source for `application.properties` like this:
 
-`propertySources.addLast(new ResourcePropertySource("app.props", new ClassPathResource("application.properties")));`
+```java
+propertySources.addLast(new ResourcePropertySource("app.props", new ClassPathResource("application.properties")));
+```
 
 It'd be a different property source if you use YAML.
 
