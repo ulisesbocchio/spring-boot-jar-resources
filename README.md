@@ -36,7 +36,7 @@ new SpringApplicationBuilder()
             .run(args);
 ```
 
-If you want to expose the path to be configurable, since version `1.3` you can do this:
+If you want to expose the path to be configurable, since version `1.2` you can do this:
 
 ```java
 public static void main(String[] args) {
