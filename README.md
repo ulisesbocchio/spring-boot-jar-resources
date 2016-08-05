@@ -52,7 +52,7 @@ static String getExtractDir(String[] args) {
         @Override
         protected void customizePropertySources(MutablePropertySources propertySources) {
             super.customizePropertySources(propertySources);
-            propertySources.addLast(new SimpleCommandLinePropertySource("cmd", args));
+            propertySources.addFirst(new SimpleCommandLinePropertySource("cmd", args));
         }
     }.getProperty("resources.extract.dir");
 }
@@ -61,7 +61,7 @@ static String getExtractDir(String[] args) {
 With this you can run you `app.jar` this ways:
 
 * `java -Dresources.extract.dir=/some/path -jar app.jar`
-* `java -jar app.jar resources.extract.dir=/some/path`
+* `java -jar app.jar --resources.extract.dir=/some/path`
 * `export RESOURCES_EXTRACT_DIR=/some/path && java -jar app.jar`
 
 It won't work if you try to put `resources.extract.dir` in `application.properties` since this is too early in the game to access those properties from Spring and after all we're creating our own customized environment with a command line arguments property source to get the property we want.  If you want to put this property in `application.properties` you can add after the `SimpleCommandLinePropertySource` another property source for `application.properties` like this:
