@@ -4,8 +4,7 @@
 
 # spring-boot-jar-resources
 
-[![Join the chat at https://gitter.im/ulisesbocchio/spring-boot-jar-resources](https://badges.gitter.im/ulisesbocchio/spring-boot-jar-resources.svg)](https://gitter.im/ulisesbocchio/spring-boot-jar-resources?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-When using Spring Boot out of the box, resources from classpath are jarred, and while they can be accessed through input streams, they cannot be accessed as Files. Some libraries require Files as input instead of input streams or Spring Resources. This library deals whith that limitation by allowing you to do resource.getFile() on any jarred resource. It does so by extracting the file from the jar to a temporary location.
+When using Spring Boot out of the box, resources from classpath are jarred, and while they can be accessed through input streams, they cannot be accessed as Files. Some libraries require Files as input instead of input streams or Spring Resources. This library deals with that limitation by allowing you to do `resource.getFile()` on any jarred resource. It does so by extracting the files from the jar to a temporary location transparently to you.
 
 ## How to use this library?
 
@@ -37,25 +36,18 @@ new SpringApplicationBuilder()
             .run(args);
 ```
 
-If you want to expose the path to be configurable, you can use this trick to get it either from the command running the spring boot app, a system property, or an environment variable (with "." for "_" and lower to UPPER case conversion)
+If you want to expose the path to be configurable, since version `1.3` you can do this:
 
 ```java
-public static void main(String[] args) throws Exception {
-    new SpringApplicationBuilder()
-        .sources(Application.class)
-        .resourceLoader(new JarResourceLoader(getExtractDir(args)))
-        .run(args);
-}
-
-static String getExtractDir(String[] args) {
-    return new StandardEnvironment() {
-        @Override
-        protected void customizePropertySources(MutablePropertySources propertySources) {
-            super.customizePropertySources(propertySources);
-            propertySources.addFirst(new SimpleCommandLinePropertySource("cmd", args));
-        }
-    }.getProperty("resources.extract.dir");
-}
+public static void main(String[] args) {
+        StandardEnvironment environment = new StandardEnvironment();
+        new SpringApplicationBuilder()
+            .sources(SpringBootJarResourcesDemoApplication.class)
+            .environment(environment)
+            .resourceLoader(new JarResourceLoader(environment, "resources.extract.dir"))
+            .build()
+            .run(args);
+    }
 ```
 
 With this you can run you `app.jar` this ways:
@@ -64,16 +56,12 @@ With this you can run you `app.jar` this ways:
 * `java -jar app.jar --resources.extract.dir=/some/path`
 * `export RESOURCES_EXTRACT_DIR=/some/path && java -jar app.jar`
 
-It won't work if you try to put `resources.extract.dir` in `application.properties` since this is too early in the game to access those properties from Spring and after all we're creating our own customized environment with a command line arguments property source to get the property we want.  If you want to put this property in `application.properties` you can add after the `SimpleCommandLinePropertySource` another property source for `application.properties` like this:
+Or put `resources.extract.dir` in `application.properties`
 
-```java
-propertySources.addLast(new ResourcePropertySource("app.props", new ClassPathResource("application.properties")));
-```
-
-It'd be a different property source if you use YAML.
+Basically this new constructor takes the `environment` from which the property (with the name provided, i.e. `resources.extract.dir`) will be retrieved to get the extract directory.
+Notice that we initialize a `StandardEnvironment` on the first line of the main method, that we also provide to the `SpringApplicationBuilder.environment(ConfigurableEnvironment)` method so that Spring can populate this object. That same environment is also passed as first argument to the `JarResourceLoader` constructor. This is required so that both Spring and the `JarResourceLoader` can share the same properties.
 
 ## How this library works?
 
 Internally, this library simply wraps existing resources loaded by DefaultResourceLoader with a custom JarResource implementation that deals with the details of extracting the resource from the Jar. The implementation only extracts resources from jars if they need to be extracted, i.e. if actually being inside a jar. If for some reason, such as when running within an IDE or using an absolute path to load resources, the resources are not inside a jar, then the actual file is used instead.
-
-## 
+ 
