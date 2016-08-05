@@ -61,6 +61,10 @@ Or put `resources.extract.dir` in `application.properties`
 Basically this new constructor takes the `environment` from which the property (with the name provided, i.e. `resources.extract.dir`) will be retrieved to get the extract directory.
 Notice that we initialize a `StandardEnvironment` on the first line of the main method, that we also provide to the `SpringApplicationBuilder.environment(ConfigurableEnvironment)` method so that Spring can populate this object. That same environment is also passed as first argument to the `JarResourceLoader` constructor. This is required so that both Spring and the `JarResourceLoader` can share the same properties.
 
+## Demo App
+
+For more information and sample implementation check out the [Demmo App](https://github.com/ulisesbocchio/spring-boot-jar-resources-samples/tree/master/spring-boot-jar-resources-demo)
+
 ## How this library works?
 
 Internally, this library simply wraps existing resources loaded by DefaultResourceLoader with a custom JarResource implementation that deals with the details of extracting the resource from the Jar. The implementation only extracts resources from jars if they need to be extracted, i.e. if actually being inside a jar. If for some reason, such as when running within an IDE or using an absolute path to load resources, the resources are not inside a jar, then the actual file is used instead.

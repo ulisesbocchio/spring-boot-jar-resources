@@ -23,7 +23,6 @@
 
     <modules>
         <module>spring-boot-jar-resources</module>
-        <module>spring-boot-jar-resources-demo</module>
     </modules>
 
     <issueManagement>
