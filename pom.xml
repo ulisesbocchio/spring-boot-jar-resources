@@ -5,7 +5,7 @@
     <groupId>com.github.ulisesbocchio</groupId>
     <artifactId>spring-boot-jar-resources-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <name>Spring Boot Jar Resources Parent</name>
     <description>Spring Boot Jar Resources Parent</description>
     <url>https://github.com/ulisesbocchio/spring-boot-jar-resources</url>
