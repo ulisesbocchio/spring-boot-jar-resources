@@ -44,11 +44,14 @@ public class JarUtils {
         File extractDir;
         if (extractPath != null) {
             extractDir = new File(extractPath);
-            FileUtils.forceMkdir(extractDir);
+            if(!extractDir.exists() || !extractDir.isDirectory()) {
+                FileUtils.forceMkdir(extractDir);
+                log.debug("TEMP EXTRACT DIR CREATED {}", extractDir.getAbsolutePath());
+            }
         } else {
             extractDir = Files.createTempDir();
+            log.debug("TEMP EXTRACT DIR CREATED {}", extractDir.getAbsolutePath());
         }
-        log.info("EXTRACT DIR CREATED {}", extractDir.getAbsolutePath());
         return copyToDir(file, extractDir);
     }
 
