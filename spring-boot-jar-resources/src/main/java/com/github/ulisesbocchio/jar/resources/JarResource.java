@@ -1,5 +1,7 @@
 package com.github.ulisesbocchio.jar.resources;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.core.io.Resource;
 import org.springframework.util.ResourceUtils;
 
@@ -8,15 +10,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ulises Bocchio
  */
+@Slf4j
 public class JarResource implements Resource {
 
     private final Resource delegate;
     private final String extractPath;
-    private File tempFile;
+    private static final Map<URL, File> FILE_REGISTRY = new ConcurrentHashMap<>();
 
     public JarResource(Resource resource) {
         this(resource, null);
@@ -55,9 +60,15 @@ public class JarResource implements Resource {
 
     @Override
     public File getFile() throws IOException {
-        if(ResourceUtils.isJarURL(getURL())) {
+        URL resourceUrl = getURL();
+        if(ResourceUtils.isJarURL(resourceUrl)) {
+            File tempFile = FILE_REGISTRY.get(resourceUrl);
             if(tempFile == null || !tempFile.exists()) {
+                log.debug("Extracting File for URL: {}", resourceUrl);
                 tempFile = JarUtils.getFile(delegate, extractPath);
+                FILE_REGISTRY.put(resourceUrl, tempFile);
+            } else {
+                log.debug("File found in registry for URL: {}", resourceUrl);
             }
             return new File(tempFile.toURI());
         }
@@ -76,7 +87,7 @@ public class JarResource implements Resource {
 
     @Override
     public Resource createRelative(String relativePath) throws IOException {
-        return new JarResource(delegate.createRelative(relativePath));
+        return new JarResource(delegate.createRelative(relativePath), extractPath);
     }
 
     @Override
