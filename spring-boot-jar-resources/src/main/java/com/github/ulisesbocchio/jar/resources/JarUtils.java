@@ -13,7 +13,6 @@ package com.github.ulisesbocchio.jar.resources;
     import org.springframework.util.ResourceUtils;
 
     import java.io.File;
-    import java.io.IOException;
     import java.util.Arrays;
     import java.util.regex.Matcher;
     import java.util.regex.Pattern;
@@ -24,6 +23,8 @@ package com.github.ulisesbocchio.jar.resources;
  */
 @Slf4j
 public class JarUtils {
+
+    private static Pattern EXCLAMATION_PATH = Pattern.compile("/([^/!]*!)/");
 
     @SneakyThrows
     public static File getFile(Resource resource, String extractPath) {
@@ -43,12 +44,31 @@ public class JarUtils {
         return copyToDir(file, extractDir);
     }
 
-    private static String maybeFixUri(Resource resource) throws IOException {
+    @SneakyThrows
+    private static String maybeFixUri(Resource resource) {
         String uri = resource.getURI().toString();
+        uri = maybeFixUriPrefix(uri);
+        uri = maybeFixExclamationPath(uri);
+        return uri;
+    }
+
+    private static String maybeFixExclamationPath(String uri) {
+        String fixedUri = uri;
+        Matcher matcher = EXCLAMATION_PATH.matcher(uri);
+        while(matcher.find()) {
+            String match = matcher.group(1);
+            if(!match.endsWith(".jar!")) {
+                fixedUri = fixedUri.replaceFirst(match, match.substring(0, match.length() - 1));
+            }
+        }
+        return fixedUri;
+    }
+
+    private static String maybeFixUriPrefix(String uri) {
         int numOfJarsInResource = numbOfJars(uri);
         String jarPrefix = jarPrefix(numOfJarsInResource);
-        uri = jarPrefix + uri.substring(4);
-        return uri;
+        String fixedUri = jarPrefix + uri.substring(4);
+        return fixedUri;
     }
 
     private static String jarPrefix(int n) {
