@@ -14,7 +14,7 @@ Simply add the following dependency to your project:
 <dependency>
 	<groupId>com.github.ulisesbocchio</groupId>
 	<artifactId>spring-boot-jar-resources</artifactId>
-	<version>1.2</version>
+	<version>1.3</version>
 </dependency>
 ```
 
