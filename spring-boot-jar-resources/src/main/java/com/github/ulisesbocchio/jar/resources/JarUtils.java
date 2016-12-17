@@ -36,7 +36,7 @@ public class JarUtils {
         FileObject file = VFS.getManager().resolveFile(maybeFixUri(resource));
         File extractDir;
         extractDir = new File(extractPath);
-        if(!extractDir.exists() || !extractDir.isDirectory()) {
+        if (!extractDir.exists() || !extractDir.isDirectory()) {
             FileUtils.forceMkdir(extractDir);
             log.debug("TEMP EXTRACT DIR CREATED {}", extractDir.getAbsolutePath());
         }
@@ -53,9 +53,9 @@ public class JarUtils {
 
     private static String jarPrefix(int n) {
         return IntStream.range(0, n)
-            .mapToObj(num -> "jar:")
-            .reduce((r, l) -> r + l)
-            .orElse("jar:");
+                .mapToObj(num -> "jar:")
+                .reduce((r, l) -> r + l)
+                .orElse("jar:");
     }
 
     private static int numbOfJars(String uri) {
@@ -79,7 +79,7 @@ public class JarUtils {
             case FOLDER:
                 return copyDirToDir(jarredFile, destination);
             case IMAGINARY:
-                if(retryIfImaginary) {
+                if (retryIfImaginary) {
                     log.debug("Imaginary file found, retrying extraction");
                     VFS.getManager().getFilesCache().removeFile(jarredFile.getFileSystem(), jarredFile.getName());
                     FileObject newJarredFile = VFS.getManager().resolveFile(jarredFile.getName().getURI());
@@ -98,7 +98,7 @@ public class JarUtils {
         File tempDir = new File(destination, jarredDir.getName().getBaseName());
         createDir(tempDir);
         Arrays.stream(jarredDir.getChildren())
-            .forEach(fileObject -> copyToDir(fileObject, tempDir));
+                .forEach(fileObject -> copyToDir(fileObject, tempDir));
         return tempDir;
     }
 
@@ -126,3 +126,4 @@ public class JarUtils {
             throw new IllegalStateException(String.format("Could not create temp jarredFile: %s", file.getAbsolutePath()));
         }
     }
+}
