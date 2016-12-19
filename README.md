@@ -63,7 +63,7 @@ Notice that we initialize a `StandardEnvironment` on the first line of the main 
 
 ## Demo App
 
-For more information and sample implementation check out the [Demmo App](https://github.com/ulisesbocchio/spring-boot-jar-resources-samples/tree/master/spring-boot-jar-resources-demo)
+For more information and sample implementation check out the [Demo App](https://github.com/ulisesbocchio/spring-boot-jar-resources-samples/tree/master/spring-boot-jar-resources-demo)
 
 ## How this library works?
 
